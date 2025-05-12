@@ -1,0 +1,6 @@
+Model,Elo Rating,Wins,Losses,Win Rate
+allenai/Molmo-7B-D-0924,1272.1,491,81,85.84%
+Qwen/Qwen2.5-VL-7B-Instruct,999.1,294,217,57.53%
+gemini-2.5-flash-preview-04-17,993.4,275,213,56.35%
+grok-2-vision-latest,920.2,153,460,24.96%
+gpt-4o,815.2,186,428,30.29%

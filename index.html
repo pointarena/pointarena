@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point Arena</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">
+                            <span class="logo">Point Arena</span>
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#point-bench">Point-Bench</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#point-battle">Point-Battle</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#point-act">Point-Act</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#about">About</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link github-link" href="https://github.com/pointarena/pointarena" target="_blank">
+                                        <i class="fab fa-github"></i> GitHub
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container text-center">
+                <h1>Point Arena</h1>
+                <p class="lead">The first open and unified evaluation platform for language-guided pointing capabilities in multi-modal LLMs</p>
+                <div class="cta-buttons">
+                    <a href="#point-bench" class="btn btn-primary">View Rankings</a>
+                    <a href="https://github.com/pointarena/pointarena" class="btn btn-primary">View Code</a>
+                    <a href="#" class="btn btn-primary">Read Paper</a>
+                    <a href="https://huggingface.co/datasets/PointArena/pointarena" class="btn btn-primary">Download Data</a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Point-Bench Section -->
+        <section id="point-bench" class="leaderboard-section">
+            <div class="container">
+                <h2 class="section-title">Point-Bench</h2>
+                <p class="text-center mb-4">Standardized evaluation of precise spatial alignment between language and vision</p>
+                <div class="table-responsive">
+                    <table class="table leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Model</th>
+                                <th>Affordance</th>
+                                <th>Spatial</th>
+                                <th>Reasoning</th>
+                                <th>Steerability</th>
+                                <th>Counting</th>
+                                <th>Average</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table data will be loaded dynamically from CSV -->
+                        </tbody>
+                    </table>
+                    <div class="text-center py-3 loading-indicator">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading data...</p>
+                    </div>
+                </div>
+                <div class="csv-download text-center mt-3">
+                    <a href="data/point-bench.csv" class="btn btn-sm btn-outline-primary">Download Complete Data (CSV)</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Point-Battle Section -->
+        <section id="point-battle" class="leaderboard-section alt-bg">
+            <div class="container">
+                <h2 class="section-title">Point-Battle</h2>
+                <p class="text-center mb-4">Performance disparities across model types and prompt strategies</p>
+                <div class="table-responsive">
+                    <table class="table leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Model</th>
+                                <th>Elo Rating</th>
+                                <th>Wins</th>
+                                <th>Losses</th>
+                                <th>Win Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table data will be loaded dynamically from CSV -->
+                        </tbody>
+                    </table>
+                    <div class="text-center py-3 loading-indicator">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading data...</p>
+                    </div>
+                </div>
+                <div class="csv-download text-center mt-3">
+                    <a href="data/point-battle.csv" class="btn btn-sm btn-outline-primary">Download Complete Data (CSV)</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Point-Act Section -->
+        <section id="point-act" class="leaderboard-section">
+            <div class="container">
+                <h2 class="section-title">Point-Act</h2>
+                <p class="text-center mb-4">Diverse datasets for standardized scenarios and rigorous evaluation protocols</p>
+                <div class="table-responsive">
+                    <table class="table leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Challenge</th>
+                                <th>Success Rate</th>
+                                <th>SUS Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table data will be loaded dynamically from CSV -->
+                        </tbody>
+                    </table>
+                    <div class="text-center py-3 loading-indicator">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading data...</p>
+                    </div>
+                </div>
+                <div class="csv-download text-center mt-3">
+                    <a href="data/point-act.csv" class="btn btn-sm btn-outline-primary">Download Complete Data (CSV)</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About Point Arena</h2>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h3>Our Mission</h3>
+                        <p>Point Arena is the first open and unified evaluation platform specifically designed to assess language-guided pointing capabilities in multi-modal large language models (MLLMs).</p>
+                        <p>Despite recent advances in visual reasoning, existing benchmarks lack fine-grained grounding tasks that require precise spatial alignment between language and vision. Point Arena addresses this gap by offering standardized scenarios, diverse datasets, and rigorous evaluation protocols.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <h3>Research Findings</h3>
+                        <ul class="benchmark-list">
+                            <li><strong>Performance Disparities</strong>: Significant differences across model types and prompt strategies</li>
+                            <li><strong>Current Limitations</strong>: Identified challenges in spatial reasoning and grounding fidelity</li>
+                            <li><strong>Future Directions</strong>: New paths for multi-modal alignment research</li>
+                        </ul>
+                        <p>Point Arena is publicly available and aims to facilitate reproducible and transparent progress in multi-modal understanding.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Point Arena</h5>
+                        <p>Open evaluation platform for language-guided pointing in MLLMs</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="social-links">
+                            <a href="https://x.com/victor_UWer" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="https://github.com/pointarena/pointarena" class="social-link"><i class="fab fa-github"></i></a>
+                            <a href="https://huggingface.co/datasets/PointArena/pointarena" class="social-link" target="_blank" title="Hugging Face">
+                            <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face" style="height: 24px;">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <p class="mb-0">&copy; 2025 Point Arena. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.3.0/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
