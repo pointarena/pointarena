@@ -97,15 +97,18 @@ def initialize_molmo(model_name="allenai/Molmo-7B-D-0924"):
             local_model_dir,
             trust_remote_code=True,
             torch_dtype='auto',
-            device_map={"": 0}  # Explicitly use CUDA device 0 (which is GPU 1 due to CUDA_VISIBLE_DEVICES=1)
+            device_map='auto'  # Explicitly use CUDA device 0 (which is GPU 1 due to CUDA_VISIBLE_DEVICES=1)
         )
         
         molmo_model = AutoModelForCausalLM.from_pretrained(
             local_model_dir,
             trust_remote_code=True,
             torch_dtype='auto',
-            device_map={"": 0}  # Explicitly use CUDA device 0 (which is GPU 1 due to CUDA_VISIBLE_DEVICES=1)
+            device_map='auto'  # Explicitly use CUDA device 0 (which is GPU 1 due to CUDA_VISIBLE_DEVICES=1)
         )
+
+        print(molmo_model.hf_device_map)
+
         
     return molmo_model, molmo_processor
 
@@ -181,6 +184,11 @@ def call_molmo_internal(image, object_name, model_name="allenai/Molmo-7B-D-0924"
         # Unified prompt format that works for both counting and non-counting
         prompt = f"""
         pointing: {object_name} """
+
+        entry_device = model.hf_device_map[
+            # pick any module name that definitely lives first, e.g. the embedding layer
+            "model.transformer.wte"
+        ]
         
         # Process the image and text
         inputs = processor.process(
@@ -189,8 +197,8 @@ def call_molmo_internal(image, object_name, model_name="allenai/Molmo-7B-D-0924"
         )
         
         # Move inputs to the correct device and make a batch of size 1
-        inputs = {k: v.to("cuda:0").unsqueeze(0) for k, v in inputs.items()}  # Explicitly use cuda:0
-        
+        inputs = {k: v.to(f"cuda:{entry_device}").unsqueeze(0) for k, v in inputs.items()}
+
         # Generate output with torch.autocast for better performance
         with torch.autocast(device_type="cuda", enabled=True, dtype=torch.bfloat16):  # Explicitly use device_index=0
             output = model.generate_from_batch(

@@ -1,7 +1,6 @@
 import os
 import json
 import argparse
-import csv
 from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
@@ -16,7 +15,6 @@ HUMAN_BENCHMARK_DIR.mkdir(exist_ok=True, parents=True)
 
 # Result file
 RESULT_FILE = "human_benchmark.json"
-METADATA_FILE = "pixmo_metadata.csv"
 
 def load_data():
     """Load data from data.json file."""
@@ -27,62 +25,6 @@ def load_data():
     except Exception as e:
         print(f"Error loading data.json: {e}")
         return []
-
-def load_existing_results():
-    """Load existing benchmark results from human_benchmark.json file."""
-    try:
-        if os.path.exists(RESULT_FILE):
-            with open(RESULT_FILE, "r") as f:
-                results = json.load(f)
-            print(f"Loaded existing results from {RESULT_FILE}")
-            return results
-        else:
-            return {
-                "total": 0,
-                "success": 0,
-                "failure": 0,
-                "details": []
-            }
-    except Exception as e:
-        print(f"Error loading existing results: {e}")
-        return {
-            "total": 0,
-            "success": 0,
-            "failure": 0,
-            "details": []
-        }
-
-def get_processed_images():
-    """Get a set of image filenames that have already been processed."""
-    results = load_existing_results()
-    processed_images = set()
-    
-    for detail in results.get("details", []):
-        if "image" in detail:
-            processed_images.add(detail["image"])
-    
-    print(f"Found {len(processed_images)} previously processed images")
-    return processed_images
-
-def load_metadata():
-    """Load metadata from pixmo_metadata.csv file."""
-    metadata = {}
-    try:
-        with open(METADATA_FILE, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                # Parse the points JSON string
-                points_str = row['points'].replace('""', '"')
-                try:
-                    # Convert string to Python list/dict
-                    points = json.loads(points_str)
-                    metadata[row['image_filename']] = points
-                except json.JSONDecodeError as e:
-                    print(f"Error parsing points for {row['image_filename']}: {e}")
-        return metadata
-    except Exception as e:
-        print(f"Error loading {METADATA_FILE}: {e}")
-        return {}
 
 def save_results(results):
     """Save benchmark results to human_benchmark.json file."""
@@ -161,14 +103,13 @@ def human_benchmark_ui():
     if not data:
         raise ValueError("No data found in data.json")
     
-    # Load metadata from pixmo_metadata.csv
-    metadata = load_metadata()
-    
-    # Get processed images from existing results
-    processed_images = get_processed_images()
-    
-    # Load existing results
-    results = load_existing_results()
+    # Initialize results
+    results = {
+        "total": 0,
+        "success": 0,
+        "failure": 0,
+        "details": []
+    }
     
     # Global variables
     current_data_item = None
@@ -189,13 +130,6 @@ def human_benchmark_ui():
         
         # Get the current item
         item = data[index]
-        image_filename = item.get("image_filename", "")
-        
-        # Skip if this image has already been processed
-        if image_filename in processed_images:
-            print(f"Skipping already processed image: {image_filename}")
-            return find_valid_image(index + 1)
-        
         data_index = index
         current_data_item = item
         
@@ -204,45 +138,32 @@ def human_benchmark_ui():
         category = item.get("category", "")
         
         # Find the image path
+        image_filename = item.get("image_filename", "")
         image_path = None
         
-        # Directly check the specific category directory first
-        if category:
-            category_dir = IMAGES_DIR / category
-            if category_dir.is_dir():
-                potential_path = category_dir / image_filename
-                if potential_path.exists():
-                    image_path = str(potential_path)
-                    current_image_path = image_path
-        
-     
+        # Look for the image in category subfolders
+        for img_category in os.listdir(IMAGES_DIR):
+            category_dir = IMAGES_DIR / img_category
+            if not category_dir.is_dir():
+                continue
+                
+            potential_path = category_dir / image_filename
+            if potential_path.exists():
+                image_path = str(potential_path)
+                current_image_path = image_path
+                break
         
         if image_path is None:
-            print(f"Image not found: {image_filename} in category: {category}")
+            print(f"Image not found: {image_filename}")
             # Skip this image and move to the next one
             return find_valid_image(index + 1)
         
-        # Load the image for displaying
-        img = Image.open(current_image_path)
-        img_width, img_height = img.size
-        
-        # If category is steerable, display the original points
-        if category == "steerable" and image_filename in metadata:
-            original_points = metadata[image_filename]
-            for point in original_points:
-                # Convert metadata points (in percentage) to pixel coordinates
-                pixel_x = int(point["x"] * img_width / 100)
-                pixel_y = int(point["y"] * img_height / 100)
-                # Draw the point with blue color to distinguish from user points
-                draw_point(img, pixel_x, pixel_y, color="blue", label="orig")
-        
         # Update progress text
-        remaining_count = len(data) - len(processed_images)
-        progress = f"Image {index + 1}/{len(data)} (Remaining: {remaining_count})"
+        progress = f"Image {index + 1}/{len(data)}"
         stats = f"Success: {results['success']}/{results['total']} ({results['success']/results['total']*100:.2f}%)" if results['total'] > 0 else "No data yet"
-        status = query
+        status = f"Click on the image to mark '{query}'"
         
-        return img, query, category, status, progress, stats, 0, ""
+        return image_path, query, category, status, progress, stats, 0, ""
     
     def process_click(image, evt: gr.SelectData, points_label):
         nonlocal current_points
@@ -266,19 +187,7 @@ def human_benchmark_ui():
             # Create a copy of the image to draw on
             img_copy = image.copy()
             
-            # If category is steerable, make sure we redraw the original points first
-            if current_data_item.get("category") == "steerable":
-                image_filename = current_data_item.get("image_filename", "")
-                if image_filename in metadata:
-                    original_points = metadata[image_filename]
-                    for point in original_points:
-                        # Convert metadata points (in percentage) to pixel coordinates
-                        pixel_x = int(point["x"] * img_width / 100)
-                        pixel_y = int(point["y"] * img_height / 100)
-                        # Draw the point with blue color to distinguish from user points
-                        draw_point(img_copy, pixel_x, pixel_y, color="blue", label="orig")
-            
-            # Draw all user points
+            # Draw all points
             for i, point in enumerate(current_points):
                 y, x = point["point"]
                 # Convert back to pixel coordinates
@@ -309,24 +218,12 @@ def human_benchmark_ui():
         if image is not None and current_image_path is not None:
             # Reload the original image
             img = Image.open(current_image_path)
-            img_width, img_height = img.size
-            
-            # If category is steerable, make sure we redraw the original points first
-            if current_data_item.get("category") == "steerable":
-                image_filename = current_data_item.get("image_filename", "")
-                if image_filename in metadata:
-                    original_points = metadata[image_filename]
-                    for point in original_points:
-                        # Convert metadata points (in percentage) to pixel coordinates
-                        pixel_x = int(point["x"] * img_width / 100)
-                        pixel_y = int(point["y"] * img_height / 100)
-                        # Draw the point with blue color to distinguish from user points
-                        draw_point(img, pixel_x, pixel_y, color="blue", label="orig")
             
             # Draw all remaining points
             for i, point in enumerate(current_points):
                 y, x = point["point"]
                 # Convert back to pixel coordinates
+                img_width, img_height = img.size
                 pixel_y = int(y * img_height / 1000)
                 pixel_x = int(x * img_width / 1000)
                 # Draw the point
@@ -344,20 +241,6 @@ def human_benchmark_ui():
         # Reload the original image
         if current_image_path is not None:
             img = Image.open(current_image_path)
-            img_width, img_height = img.size
-            
-            # If category is steerable, make sure we redraw the original points first
-            if current_data_item.get("category") == "steerable":
-                image_filename = current_data_item.get("image_filename", "")
-                if image_filename in metadata:
-                    original_points = metadata[image_filename]
-                    for point in original_points:
-                        # Convert metadata points (in percentage) to pixel coordinates
-                        pixel_x = int(point["x"] * img_width / 100)
-                        pixel_y = int(point["y"] * img_height / 100)
-                        # Draw the point with blue color to distinguish from user points
-                        draw_point(img, pixel_x, pixel_y, color="blue", label="orig")
-            
             return img, "Points: 0", "All points cleared"
         
         return image, "Points: 0", "All points cleared"
@@ -367,10 +250,6 @@ def human_benchmark_ui():
         
         if current_data_item is None:
             return None, "No data loaded", "No category", "Points: 0", "Progress", "No stats", "Please load data first"
-        
-        # Prevent submission if no points are marked
-        if len(current_points) == 0:
-            return None, query_text.value, category_text.value, points_text.value, progress_text.value, stats_text.value, "Please mark at least one point before submitting"
         
         # Get item details
         category = current_data_item.get("category", "")
@@ -418,7 +297,7 @@ def human_benchmark_ui():
                 print(f"Warning: Mask not found: {mask_filename}")
         
         # Save image with points
-        output_filename = f"{Path(image_filename).stem}_human.png"
+        output_filename = f"{Path(image_filename).stem}_human.jpg"
         output_path = HUMAN_BENCHMARK_DIR / output_filename
         
         # Create visualization
@@ -426,17 +305,7 @@ def human_benchmark_ui():
             img = Image.open(current_image_path)
             img_width, img_height = img.size
             
-            # Draw original points for steerable category
-            if category == "steerable" and image_filename in metadata:
-                original_points = metadata[image_filename]
-                for point in original_points:
-                    # Convert metadata points (in percentage) to pixel coordinates
-                    pixel_x = int(point["x"] * img_width / 100)
-                    pixel_y = int(point["y"] * img_height / 100)
-                    # Draw the point with blue color
-                    draw_point(img, pixel_x, pixel_y, color="blue", label="orig")
-            
-            # Draw user points
+            # Draw points
             for i, point in enumerate(current_points):
                 y, x = point["point"]
                 # Convert to pixel coordinates
@@ -469,9 +338,6 @@ def human_benchmark_ui():
         
         # Save results to file
         save_results(results)
-        
-        # Add this image to processed images
-        processed_images.add(image_filename)
         
         # Move to the next image
         next_index = data_index + 1
