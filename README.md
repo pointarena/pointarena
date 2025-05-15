@@ -1,4 +1,4 @@
-# Static Set Builder - AI Image Point Recognition Evaluation Tool
+# PointArena: Probing Multimodal Grounding Through Language-Guided Pointing
 
 This application provides a comprehensive platform for evaluating and benchmarking multimodal AI vision-language models on image point recognition tasks. It combines manual annotation capabilities with automated segmentation for precise object identification, and includes extensive evaluation tools for comparing various vision-language models.
 
