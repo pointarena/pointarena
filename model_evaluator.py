@@ -61,8 +61,8 @@ except Exception as e:
     IMAGE_POINTS_MAP = {}
 
 # Available models
-OPENAI_MODELS = ["gpt-4o", "gpt-4o-mini", "gpt-4.1-mini", "gpt-4.1-nano", "gpt-4v"]
-GEMINI_MODELS = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.5-flash-preview-04-17", "gemini-2.5-pro-preview-05-06","gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"]
+OPENAI_MODELS = ["gpt-4o", "o3", "gpt-4.1"]
+GEMINI_MODELS = ["gemini-2.5-flash-preview-04-17", "gemini-2.5-pro-preview-05-06","gemini-2.0-flash"]
 MOLMO_MODELS = ["Molmo-7B-D-0924", "Molmo-7B-O-0924", "Molmo-72B-0924"]
 QWEN_MODELS = ["Qwen2.5-VL-7B-Instruct", "Qwen2.5-VL-32B-Instruct", "Qwen2.5-VL-72B-Instruct"]
 LLAVA_MODELS = ["llava-onevision-qwen2-7b-ov-hf"]
@@ -1303,7 +1303,7 @@ def evaluate_model(model_name, model_type, progress_callback=None, resume=True):
     """Evaluate model performance on the dataset."""
     # Load data.json file
     try:
-        with open("where2place/point_questions.jsonl", "r") as f:
+        with open("data.json", "r") as f:
             data = json.load(f)
     except Exception as e:
         print(f"Error loading data.json: {e}")
@@ -1337,7 +1337,7 @@ def evaluate_model(model_name, model_type, progress_callback=None, resume=True):
         return
     
     # Define results file name
-    results_file = f"results_{model_type}_{model_name.replace('/', '_')}_other_dataset_experiment.json"
+    results_file = f"results_{model_type}_{model_name.replace('/', '_')}_simple_prompt.json"
     if not os.path.exists("static_results"):
         os.makedirs("static_results")
     results_file = f"static_results/{results_file}"

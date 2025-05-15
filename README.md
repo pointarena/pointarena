@@ -25,7 +25,7 @@ This project provides a comprehensive platform for evaluating and benchmarking m
 1. Clone the repository:
 ```bash 
 git clone <repository-url>
-cd pointarena-code
+cd pointarena
 ```
 
 2. Install dependencies:
@@ -47,11 +47,6 @@ XAI_API_KEY=your_xai_api_key
 SAM_CHECKPOINT_PATH=./sam_vit_h_4b8939.pth
 SAM_MODEL_TYPE=vit_h
 SAVED_MODELS_DIR=./models
-R2_ENDPOINT_URL=your_r2_endpoint_url
-R2_ACCESS_KEY_ID=your_r2_access_key
-R2_SECRET_ACCESS_KEY=your_r2_secret_key
-R2_BUCKET_NAME=your_r2_bucket_name
-MOLMO_API_URL=your_molmo_api_url
 ```
 
 5. Download the SAM model checkpoint:
@@ -77,7 +72,26 @@ python app.py
    - Compare different model predictions
    - Save annotations to a structured data format
 
-### Dynamic Testing Interface
+
+### Point-Bench
+
+Evaluate vision-language models on point recognition tasks:
+
+```bash
+# Run evaluation for a specific model
+# For example:
+python model_evaluator.py --model gpt-4o --type openai
+python model_evaluator.py --model gemini-2.0-flash --type gemini
+python molmo_evaluator.py --model Molmo-7B-D-0924 --type molmo
+```
+
+The evaluator will:
+1. Generate visualizations showing points predicted by each model
+2. Save these visualizations to the `point_on_mask` directory
+3. Create a JSON results file with detailed metrics   
+
+
+### Point-Battle
 
 1. Start the dynamic testing interface:
 ```bash
@@ -92,24 +106,7 @@ python dynamic.py
    - Compare model performance in head-to-head battles
    - View dynamic ELO leaderboard
 
-### Model Evaluator
 
-Evaluate vision-language models on point recognition tasks:
-
-```bash
-# Run evaluation for a specific model
-python model_evaluator.py --model MODEL_NAME --type MODEL_TYPE
-
-# For example:
-python model_evaluator.py --model gpt-4o --type openai
-python model_evaluator.py --model gemini-2.0-flash --type gemini
-python model_evaluator.py --model Molmo-7B-D-0924 --type molmo
-```
-
-The evaluator will:
-1. Generate visualizations showing points predicted by each model
-2. Save these visualizations to the `point_on_mask` directory
-3. Create a JSON results file with detailed metrics
 
 ### Performance Analysis
 
@@ -129,14 +126,14 @@ python human_benchmark.py
 ## Project Structure
 
 - `app.py`: Main annotation application with Gradio UI for static evaluation
-- `dynamic.py`: Dynamic testing interface for head-to-head model comparisons
-- `model_evaluator.py`: Comprehensive framework for evaluating different vision-language models
+- `dynamic.py`: Point-Battle interface for head-to-head model comparisons
+- `model_evaluator.py `: Point-Bench interface for evaluating different vision-language models
+- `molmo_evaluator.py `: Point-Bench interface for evaluating different vision-language models
 - `elo_leaderboard.py`: Generate ELO ratings and confidence intervals for model performance
 - `pairwise_win_rates.py`: Calculate and visualize pairwise model comparisons with heatmaps
 - `molmo_api.py`: API client for Molmo model inference with support for local or remote execution
 - `optimize_user_input.py`: Optimize user prompts for better model performance
-- `human_benchmark.py`: Evaluate and compare human performance against model predictions
-- `run.py`: Simple utility script for running batch evaluations
+- `human_benchmark.py`: Evaluate human performance
 - `segment_utils.py`: Helper utilities for the Segment Anything Model integration
 
 ## Image Categories
@@ -152,18 +149,13 @@ The system supports five specialized task categories:
 
 ### OpenAI Models
 - gpt-4o
-- gpt-4o-mini
+- o3
 - gpt-4.1
-- gpt-4.1-mini
-- gpt-4.1-nano
 
 ### Google Models
-- gemini-2.5-flash-preview
+- gemini-2.5-flash-preview-04-17
+- gemini-2.5-pro-preview-05-06
 - gemini-2.0-flash
-- gemini-2.0-flash-lite
-- gemini-1.5-flash
-- gemini-1.5-flash-8b
-- gemini-1.5-pro
 
 ### Open Source Models
 - Molmo-7B-D-0924
@@ -199,8 +191,3 @@ Core dependencies:
 - Pillow, NumPy, Matplotlib for image processing and visualization
 - FastAPI and Uvicorn for API services
 - Pandas and Seaborn for data analysis and visualization
-
-## Acknowledgments
-
-- The Segment Anything Model (SAM) is provided by Meta AI Research
-- This project builds on research from various multimodal AI research teams

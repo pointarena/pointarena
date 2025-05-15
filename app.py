@@ -75,7 +75,7 @@ else:
 OPENAI_MODELS = ["gpt-4o", "gpt-4o-mini",  "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano"] # o1 is not supported yet
 GEMINI_MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"]
 # Molmo models
-MOLMO_MODELS = ["Molmo-7B-D-0924", "Molmo-7B-O-0924"]
+MOLMO_MODELS = ["Molmo-7B-D-0924", "Molmo-7B-O-0924", "Molmo-7B-O-0924"]
 # Qwen models
 QWEN_MODELS = ["Qwen2.5-VL-7B-Instruct"]
 # LLaVA models
@@ -353,81 +353,37 @@ def call_gemini(image_path, object_name, model_name="gemini-2.0-flash", category
         # Default to jpeg for other formats
         mime_type = "image/jpeg"
     
-    # NOTE: Gemini uses a different coordinate system: [y, x] format and 0-1000 normalization
     # Check if category is counting - limit points accordingly
     if category == "counting":
         prompt = f"""
         Point to {object_name}.
         The image dimensions are width={img_width}px, height={img_height}px.
         The answer should follow the json format: [{{"point": <point>}}, ...]. 
-        IMPORTANT: The points MUST be in [y, x] format where y is the vertical position (top-to-bottom) and x is the horizontal position (left-to-right), both normalized to 0-1000.
-        Example: For a point in the center of the image, return [500, 500].
+        IMPORTANT: The points MUST be in [x, y] format where x is the horizontal position (left-to-right) and y is the vertical position (top-to-bottom) in PIXEL COORDINATES (not normalized).
+        Example: For a point in the center of the image, return [width/2, height/2].
         """
     else:
         prompt = f"""
         Point to {object_name}.
         The image dimensions are width={img_width}px, height={img_height}px.
         The answer should follow the json format: [{{"point": <point>}}]. 
-        IMPORTANT: Return EXACTLY ONE POINT. The point MUST be in [y, x] format where y is the vertical position (top-to-bottom) and x is the horizontal position (left-to-right), both normalized to 0-1000.
-        Example: For a point in the center of the image, return [500, 500].
+        IMPORTANT: Return EXACTLY ONE POINT. The point MUST be in [x, y] format where x is the horizontal position (left-to-right) and y is the vertical position (top-to-bottom) in PIXEL COORDINATES (not normalized).
+        Example: For a point in the center of the image, return [width/2, height/2].
         """
     
     response = model.generate_content([prompt, {"mime_type": mime_type, "data": image_data}])
     
     try:
         content = response.text
-        print(f"\n[DEBUG] Raw Gemini output for {object_name} in {image_path}:")
-        print(content)
-        
         # Extract JSON from the response
         json_start = content.find('[')
         json_end = content.rfind(']') + 1
         if json_start != -1 and json_end != -1:
             json_str = content[json_start:json_end]
-            print(f"[DEBUG] Extracted JSON string: {json_str}")
-            
-            # Parse the JSON
-            raw_points = json.loads(json_str)
-            
-            # Convert from Gemini's format ([y, x] in 0-1000 range) to standard format ([x, y] in pixels)
-            points = []
-            for item in raw_points:
-                if isinstance(item, dict) and "point" in item:
-                    if isinstance(item["point"], list) and len(item["point"]) == 2:
-                        # Gemini format: [y, x] normalized to 0-1000
-                        # We need to: 1) swap coordinates and 2) convert to pixels
-                        y, x = item["point"]
-                        # Convert normalized coordinates (0-1000) to pixel coordinates
-                        pixel_x = (x / 1000.0) * img_width
-                        pixel_y = (y / 1000.0) * img_height
-                        # Add to points list in standard format
-                        points.append({"point": [pixel_x, pixel_y]})
-            
-            print(f"[DEBUG] Converted points: {points}")
-            
-            # If no valid points were found or conversion failed, try regex to extract coordinates
-            if not points:
-                import re
-                # Look for patterns like [y, x] or [number, number]
-                coords = re.findall(r'\[(\d+\.?\d*),\s*(\d+\.?\d*)\]', json_str)
-                if coords:
-                    print(f"[DEBUG] Coordinates extracted via regex: {coords}")
-                    # First coordinate is y, second is x in Gemini's format
-                    for y_str, x_str in coords:
-                        try:
-                            y, x = float(y_str), float(x_str)
-                            # Convert normalized coordinates (0-1000) to pixel coordinates
-                            pixel_x = (x / 1000.0) * img_width
-                            pixel_y = (y / 1000.0) * img_height
-                            points.append({"point": [pixel_x, pixel_y]})
-                        except ValueError:
-                            continue
-                    print(f"[DEBUG] Points after regex extraction: {points}")
-            
+            points = json.loads(json_str)
             # If not counting category and more than one point was returned, limit to first point
             if category != "counting" and len(points) > 1:
                 points = [points[0]]
-            
             return points
         else:
             return []
@@ -909,15 +865,15 @@ def process_test(object_name, image_path, image_filename, category=None):
     # for model_name in OPENAI_MODELS:
     #     all_models.append((model_name, call_openai))
     
-    # Add all Gemini models
-    for model_name in GEMINI_MODELS:
-        all_models.append((model_name, call_gemini))
+    # # Add all Gemini models
+    # for model_name in GEMINI_MODELS:
+    #     all_models.append((model_name, call_gemini))
     
     # Add all Molmo models
-    # for model_name in MOLMO_MODELS:
-    #     # For Molmo models, we need to add the complete path prefix
-    #     full_model_name = f"allenai/{model_name}" if not model_name.startswith("allenai/") else model_name
-    #     all_models.append((full_model_name, call_molmo))
+    for model_name in MOLMO_MODELS:
+        # For Molmo models, we need to add the complete path prefix
+        full_model_name = f"allenai/{model_name}" if not model_name.startswith("allenai/") else model_name
+        all_models.append((full_model_name, call_molmo))
     
     # Randomly select three models for comparison (without category restriction)
     selected_models = random.sample(all_models, 3)

@@ -40,16 +40,6 @@ xai_client = OpenAI(
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-
-# Cloudflare R2 configuration
-r2 = boto3.client(
-    's3',
-    endpoint_url=os.getenv("R2_ENDPOINT_URL"),
-    aws_access_key_id=os.getenv("R2_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("R2_SECRET_ACCESS_KEY"),
-)
-R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME")
-
 # Constants
 IMAGES_DIR = Path("images")
 USER_PHOTOS_DIR = Path("user_photos")
@@ -90,7 +80,7 @@ UI_MODEL_NAMES = ["Model A", "Model B"]
 POINT_COLORS = ["red", "yellow"]  # Colors for the points from different models
 
 # Molmo API configuration
-MOLMO_API_URL = os.getenv("MOLMO_API_URL", "http://10.64.77.56:8000")
+MOLMO_API_URL = os.getenv("MOLMO_API_URL", "http://10.64.77.57:8000")
 
 # Initialize Molmo model and processor (this will be replaced with API calls)
 molmo_model = None
@@ -961,7 +951,7 @@ def update_elo(rating_a, rating_b, score_a):
     Update the Elo rating for player A based on their score against player B.
     Score is 1 for a win, 0 for a loss.
     """
-    K_FACTOR = 32  # Standard K-factor for Elo
+    K_FACTOR = 2  # Standard K-factor for Elo
     expected_a = calculate_expected_score(rating_a, rating_b)
     return rating_a + K_FACTOR * (score_a - expected_a)
 
@@ -1086,13 +1076,13 @@ def generate_elo_leaderboard():
     plt.close()
     
     # Format the leaderboard as markdown for display
-    markdown_table = "| Rank | Model | Elo Rating | Wins | Losses | Win Rate |\n"
-    markdown_table += "|------|-------|-----------|------|--------|----------|\n"
+    markdown_table = "| Rank | Model | Elo Rating | Win Rate |\n"
+    markdown_table += "|------|-------|-----------|----------|\n"
     
     for i, row in leaderboard_df.iterrows():
-        markdown_table += f"| {i+1} | {row['Model']} | {row['Elo Rating']} | {row['Wins']} | {row['Losses']} | {row['Win Rate']} |\n"
+        markdown_table += f"| {i+1} | {row['Model']} | {row['Elo Rating']} | {row['Win Rate']} |\n"
     
-    markdown_summary = f"### ELO Leaderboard\nBased on {valid_battles} valid battles\n\n{markdown_table}"
+    markdown_summary = f"### ELO Leaderboard\nBased on {len(results)} battles\n\n{markdown_table}"
     
     return markdown_summary, img_pil
 
