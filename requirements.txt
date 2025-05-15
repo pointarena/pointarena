@@ -1,0 +1,26 @@
+torch==2.2.0
+torchvision==0.17.0
+torchaudio==2.2.0
+pillow==10.2.0
+gradio==5.22.0
+numpy==1.26.3
+matplotlib==3.8.2
+openai==1.77.0
+google-generativeai==0.3.2
+boto3==1.34.51
+python-dotenv==1.0.0
+# transformers==4.52.0.dev0
+# use pip install git+https://github.com/huggingface/transformers
+supabase==2.3.0
+opencv-python>=4.8.0
+accelerate==0.27.2
+peft==0.10.0
+fastapi==0.115.2
+uvicorn==0.29.0
+einops==0.7.0
+llava==1.7.0.dev0
+tensorflow==2.19.0
+anthropic==0.50.0
+
+# Segment Anything Model (SAM) dependencies
+segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
