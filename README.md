@@ -1,5 +1,6 @@
 <p align="center">
     <h1 align="center">
+    <img src="https://pointarena.github.io/favicon.ico" width="25px"/>
         PointArena: Probing Multimodal Grounding Through Language-Guided Pointing
     </h1>
 </p>
@@ -26,6 +27,10 @@
   <sup>1</sup>University of Washington, 
   <sup>2</sup>Allen Institute for Artificial Intelligence, 
   <sup>3</sup>Anderson Collegiate Vocational Institute
+  <br>
+∗Co-first authors.
+†Co-second authors.
+  
 </p>
 
 <div align="center">
