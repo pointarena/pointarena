@@ -1,4 +1,51 @@
-# PointArena: Probing Multimodal Grounding Through Language-Guided Pointing
+<p align="center">
+    <h1 align="center">
+        PointArena: Probing Multimodal Grounding Through Language-Guided Pointing
+    </h1>
+</p>
+
+<p align="center">
+  <a href="https://victorthecreator.me/">Long Cheng<sup>1∗</sup></a>, 
+  <a href="https://duanjiafei.com">Jiafei Duan<sup>1,2∗</sup></a>, 
+  <a href="https://helen9975.github.io">Yi Ru Wang<sup>1†</sup></a>, 
+  <a href="https://hq-fang.github.io">Haoquan Fang<sup>1,2†</sup></a>, 
+  <a href="#">Boyang Li<sup>1†</sup></a>, 
+  <br>
+  <a href="#">Yushan Huang<sup>1</sup></a>, 
+  <a href="#">Elvis Wang<sup>3</sup></a>, 
+  <a href="#">Ainaz Eftekhar<sup>1,2</sup></a>, 
+  <a href="#">Jason Lee<sup>1,2</sup></a>, 
+  <a href="#">Wentao Yuan<sup>1</sup></a>, 
+  <br>
+  <a href="#">Rose Hendrix<sup>2</sup></a>, 
+  <a href="https://nasmith.github.io/">Noah A. Smith<sup>1,2</sup></a>, 
+  <a href="https://linguistics.washington.edu/people/fei-xia">Fei Xia<sup>1</sup></a>, 
+  <a href="https://homes.cs.washington.edu/~fox">Dieter Fox<sup>1</sup></a>, 
+  <a href="https://ranjaykrishna.com">Ranjay Krishna<sup>1,2</sup></a>
+  <br>
+  <sup>1</sup>University of Washington, 
+  <sup>2</sup>Allen Institute for Artificial Intelligence, 
+  <sup>3</sup>Anderson Collegiate Vocational Institute
+</p>
+
+<div align="center">
+  <p>
+    <a href="https://pointarena.github.io/">
+      <img src="https://img.shields.io/badge/Website-grey?logo=google-chrome&logoColor=white&labelColor=blue">
+    </a>
+    <a href="https://arxiv.org/abs/2505.09990">
+      <img src="https://img.shields.io/badge/arXiv-grey?logo=arxiv&logoColor=white&labelColor=red">
+    </a>
+    <a href="https://huggingface.co/datasets/PointArena/pointarena-data">
+      <img src="https://img.shields.io/badge/Dataset-grey?logo=huggingface&logoColor=white&labelColor=yellow">
+    </a>
+    <a href="https://x.com/victor_UWer">
+      <img src="https://img.shields.io/badge/Post-grey?logo=x&logoColor=white&labelColor=black">
+    </a>
+  </p>
+</div>
+
+<br>
 
 This project provides a comprehensive platform for evaluating and benchmarking multimodal AI vision-language models on image point recognition tasks. It combines manual annotation capabilities with automated segmentation for precise object identification, and includes extensive evaluation tools for comparing various vision-language models.
 
