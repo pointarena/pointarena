@@ -52,7 +52,8 @@
 
 <br>
 
-This project provides a comprehensive platform for evaluating and benchmarking multimodal AI vision-language models on image point recognition tasks. It combines manual annotation capabilities with automated segmentation for precise object identification, and includes extensive evaluation tools for comparing various vision-language models.
+Pointing serves as a fundamental and intuitive mechanism for grounding language within visual contexts, with applications spanning robotics, assistive technologies, and interactive AI systems. While recent multimodal models have begun supporting pointing capabilities, existing benchmarks typically focus only on referential object localization. We introduce PointArena, a comprehensive platform for evaluating multimodal pointing across diverse reasoning scenarios. PointArena comprises three components: (1) Point-Bench, a curated dataset of approximately 1,000 pointing tasks across five reasoning categories; (2) Point-Battle, an interactive web-based arena facilitating blind, pairwise model comparisons, which has collected over 4,500 anonymized votes; and (3) Point-Act, a real-world robotic manipulation system allowing users to directly evaluate model pointing in practical settings. We conducted extensive evaluations of both state-of-the-art open-source and proprietary models. Results indicate that Molmo-72B consistently outperforms others, though proprietary models increasingly demonstrate comparable performance. Additionally, we find that supervised training targeting pointing tasks significantly improves performance. Across our multi-stage evaluation pipeline, we observe strong correlations, underscoring the critical role of precise pointing in enabling multimodal models to bridge abstract reasoning with real-world actions.
+
 
 ## Key Features
 
