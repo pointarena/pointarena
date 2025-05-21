@@ -325,9 +325,6 @@ def get_original_points_info(image_path, category):
 
 def call_openai(image_path, object_name, model_name="gpt-4o", category=None):
     """Call OpenAI model to get points for the specified object."""
-    # Modify the filename to add "_marked" before the extension (SOM)
-    base_name, file_extension = os.path.splitext(image_path)
-    image_path = f"{base_name}_marked{file_extension}"
 
     # Read the image file
     with open(image_path, "rb") as image_file:
@@ -357,23 +354,21 @@ def call_openai(image_path, object_name, model_name="gpt-4o", category=None):
     
     # Check if category is counting - limit points accordingly
     if category == "counting":
-        prompt = f"""
-        This image contains numbered marks (e.g., [1], [2]) overlaid on various objects or regions. 
-        Using these visual prompts in numbered mark to help reason step by step for the given tasks:{object_name}.
-        The image dimensions are width={img_width}px, height={img_height}px.{original_points_info}
-        The answer should follow the json format: [{{"point": <point>}}, ...]. 
-        IMPORTANT: The points MUST be in [x, y] format where x is the horizontal position (left-to-right) and y is the vertical position (top-to-bottom) in PIXEL COORDINATES (not normalized).
-        Example: For a point in the center of the image, return [width/2, height/2].
-        """
+            prompt = f"""
+            {object_name}.
+            The image dimensions are width={img_width}px, height={img_height}px.{original_points_info}
+            The answer should follow the json format: [{{"point": <point>}}, ...]. 
+            IMPORTANT: The points MUST be in [x, y] format where x is the horizontal position (left-to-right) and y is the vertical position (top-to-bottom) in PIXEL COORDINATES (not normalized).
+            Example: For a point in the center of the image, return [width/2, height/2].
+            """
     else:
         prompt = f"""
-        This image contains numbered marks (e.g., [1], [2]) overlaid on various objects or regions. 
-        Using these visual prompts in numbered mark to help reason step by step for the given tasks:{object_name}.
+        {object_name}.
         The image dimensions are width={img_width}px, height={img_height}px.{original_points_info}
         The answer should follow the json format: [{{"point": <point>}}]. 
         IMPORTANT: Return EXACTLY ONE POINT. The point MUST be in [x, y] format where x is the horizontal position (left-to-right) and y is the vertical position (top-to-bottom) in PIXEL COORDINATES (not normalized).
         Example: For a point in the center of the image, return [width/2, height/2].
-        """
+            """
     
     # Define system content
     system_content = "You are a helpful assistant that can identify objects in images and provide their coordinates."
