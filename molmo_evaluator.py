@@ -290,12 +290,12 @@ def call_molmo(image_path, object_name, model_name="allenai/Molmo-7B-D-0924", ca
         # Prepare the prompt based on category
         if category == "counting":
             prompt = f"""
-            {object_name}
+            pointing: {object_name}
             {original_points_info}
             """
         else:
             prompt = f"""
-            {object_name}
+            pointing: {object_name}
             {original_points_info}
             """
        
